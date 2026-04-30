@@ -1,10 +1,35 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext.jsx";
+import toast from "react-hot-toast"
 
 const UserLogin = () => {
+  const {loginUser}  = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = {
+      email,
+      password,
+    };
+    try {
+      await loginUser(formData);
+      navigate("/home");
+      toast.success("User Logged in Successfully");
+    } catch (err) {
+      toast.error("Invalid Credentials");
+    } finally{
+      setEmail("");
+      setPassword("");
+    }
+  };
 
   return (
-     <div
+    <div
       className="relative min-h-screen w-full flex items-center justify-center p-5 md:p-10"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1638745392689-515e499a3711?q=80&w=1170&auto=format&fit=crop')`,
@@ -23,11 +48,13 @@ const UserLogin = () => {
             alt="Uber Logo"
           />
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <h3 className="text-base font-bold mb-2 text-gray-900">
               What's your email?
             </h3>
             <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="bg-[#f2f2f2] mb-5 rounded-lg px-4 py-2.5 border-none w-full text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
               type="email"
@@ -38,6 +65,8 @@ const UserLogin = () => {
               Enter Password
             </h3>
             <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="bg-[#f2f2f2] mb-6 rounded-lg px-4 py-2.5 border-none w-full text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
               type="password"
@@ -76,7 +105,7 @@ const UserLogin = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default UserLogin
+export default UserLogin;

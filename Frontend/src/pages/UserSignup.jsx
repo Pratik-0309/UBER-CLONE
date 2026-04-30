@@ -1,7 +1,40 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserContext.jsx'
+import toast from 'react-hot-toast'
 
 const UserSignup = () => {
+
+  const { registerUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    const formData = {
+      fullName: {firstName, lastName},
+      email,
+      password,
+    }
+    try {
+      await registerUser(formData);
+      navigate("/home");
+      toast.success("User Registered Successfully");
+    } catch (error) {
+      toast.error("Invalid Credentials");
+      console.log(error);
+    } finally {
+       setEmail("");
+       setFirstName("");
+       setLastName("");
+       setPassword("");
+    }
+  }
+
   return (
     <div
       className="relative min-h-screen w-full flex items-center justify-center p-5 md:p-10"
@@ -22,18 +55,22 @@ const UserSignup = () => {
             alt="Uber Logo"
           />
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <h3 className="text-base font-bold mb-3 text-gray-900">
               What's your name?
             </h3>
             <div className="flex gap-3 mb-5">
               <input
+                value={firstName}
+                onChange={(e)=> setFirstName(e.target.value)}
                 required
                 className="bg-[#f2f2f2] w-1/2 rounded-lg px-4 py-2.5 border-none text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
                 type="text"
                 placeholder="First name"
               />
               <input
+                value={lastName}
+                onChange={(e)=> setLastName(e.target.value)}
                 required
                 className="bg-[#f2f2f2] w-1/2 rounded-lg px-4 py-2.5 border-none text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
                 type="text"
@@ -45,6 +82,8 @@ const UserSignup = () => {
               What's your email?
             </h3>
             <input
+              value={email}
+              onChange={(e)=> setEmail(e.target.value)}
               required
               className="bg-[#f2f2f2] mb-5 rounded-lg px-4 py-2.5 border-none w-full text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
               type="email"
@@ -55,6 +94,8 @@ const UserSignup = () => {
               Enter Password
             </h3>
             <input
+              value={password}
+              onChange={(e)=> setPassword(e.target.value)}
               required
               className="bg-[#f2f2f2] mb-6 rounded-lg px-4 py-2.5 border-none w-full text-base placeholder:text-gray-400 outline-none focus:bg-[#ebebeb] transition-all"
               type="password"
